@@ -1,5 +1,5 @@
 {
-  "name": "Forge Kitchen",
+  "name": "Forge Cloud",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:4-24-bookworm",
   "hostRequirements": { "cpus": 2, "memory": "4gb" },
   "postCreateCommand": "bash .devcontainer/post-create.sh",
@@ -18,7 +18,7 @@
     "vscode": {
       "extensions": ["redhat.vscode-yaml"],
       "settings": {
-        "yaml.schemas": { "/home/node/.forge-kitchen/manifest-schema.json": "**/manifest.yml" }
+        "yaml.schemas": { "/home/node/.forge-cloud/manifest-schema.json": "**/manifest.yml" }
       }
     }
   }
