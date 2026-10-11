@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Gets the course's example app as it should be at a point in the course, so you can
 # start a lesson without having done the ones before it.
-#   kitchen-catch-up                  list every point you can start from
-#   kitchen-catch-up <name>           download one, e.g. kitchen-catch-up level-1/after-04-call-the-supplier
-#                                     (a unique part of the name is enough: kitchen-catch-up 1/after-04)
+#   course-catch-up                  list every point you can start from
+#   course-catch-up <name>           download one, e.g. course-catch-up level-1/after-04
+#                                    (a unique part of the name is enough: course-catch-up 1/after-04)
 set -euo pipefail
 
-site="${KITCHEN_SITE:-https://forgecloud.si}"
+site="${COURSE_SITE:-https://forgecloud.si}"
 index="$(curl -fsSL "$site/downloads/index.json")" || {
   echo "Could not reach $site. Check your connection, or download the code from the lesson page." >&2
   exit 1
@@ -17,14 +17,14 @@ if [ $# -eq 0 ]; then
   echo "Points you can start from (start, or the code as it is after that lesson):"
   sed 's/^/  /' <<<"$names"
   echo
-  echo "Get one with: kitchen-catch-up <name>"
+  echo "Get one with: course-catch-up <name>"
   exit 0
 fi
 
 matches="$(grep -F -- "$1" <<<"$names" || true)"
 count="$(grep -c . <<<"$matches" || true)"
 if [ "$count" -eq 0 ]; then
-  echo "Nothing matches \"$1\". Run kitchen-catch-up with no name to see the list." >&2
+  echo "Nothing matches \"$1\". Run course-catch-up with no name to see the list." >&2
   exit 1
 elif [ "$count" -gt 1 ]; then
   echo "\"$1\" matches more than one:" >&2
@@ -33,22 +33,24 @@ elif [ "$count" -gt 1 ]; then
 fi
 
 name="$matches"
-target="mise-en-place"
-[ -e "$target" ] && target="mise-en-place-$(basename "$name")"
-if [ -e "$target" ]; then
-  echo "$target already exists. Rename or remove it first." >&2
-  exit 1
-fi
-
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 curl -fsSL "$site/downloads/$name.zip" -o "$tmp/code.zip"
 unzip -q "$tmp/code.zip" -d "$tmp/out"
-mv "$tmp/out/mise-en-place" "$target"
+
+# The zip holds one folder with the app; keep its name, or add the point's name if it is taken.
+folder="$(ls "$tmp/out")"
+target="$folder"
+[ -e "$target" ] && target="$folder-$(basename "$name")"
+if [ -e "$target" ]; then
+  echo "$target already exists. Rename or remove it first." >&2
+  exit 1
+fi
+mv "$tmp/out/$folder" "$target"
 
 echo "Downloaded $name into $target/"
 echo
-if [ -f "$target/README-FORGE-KITCHEN.txt" ]; then
-  sed -n '/^Starting from this folder/,/^$/p' "$target/README-FORGE-KITCHEN.txt"
-fi
+for readme in "$target"/README-FORGE-*.txt; do
+  [ -f "$readme" ] && sed -n '/^Starting from this folder/,/^$/p' "$readme"
+done
 echo "Start with: cd $target"
