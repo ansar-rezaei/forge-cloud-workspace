@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Checks the general setup from the course: Node.js, the Forge CLI and your login.
+#   kitchen-check
+set -uo pipefail
+
+ok=0
+pass() { printf '  \033[32m✓\033[0m %s\n' "$1"; }
+fail() { printf '  \033[31m✗\033[0m %s\n    %s\n' "$1" "$2"; ok=1; }
+
+echo "Forge Kitchen setup"
+
+node_major="$(node -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0)"
+if [ "$node_major" -ge 22 ]; then pass "Node.js $(node --version)"
+else fail "Node.js 22 or newer" "Found: $(node --version 2>/dev/null || echo none)."; fi
+
+if command -v forge >/dev/null; then pass "Forge CLI $(forge --version 2>/dev/null | tail -1)"
+else fail "Forge CLI" "Install it: npm install -g @forge/cli@latest"; fi
+
+if [ -z "${FORGE_EMAIL:-}" ] || [ -z "${FORGE_API_TOKEN:-}" ]; then
+  fail "Logged in" "Run kitchen-login, or save FORGE_EMAIL and FORGE_API_TOKEN as Codespaces secrets."
+elif who="$(forge whoami 2>&1)"; then
+  pass "Logged in: $(echo "$who" | grep -v '^\s*$' | tail -1)"
+else
+  fail "Logged in" "The CLI refused the email or token. Run kitchen-login again with a new token."
+fi
+
+if [ "$ok" -eq 0 ]; then
+  echo "All set. Next: get a developer site, as in the course's general setup."
+fi
+exit "$ok"
