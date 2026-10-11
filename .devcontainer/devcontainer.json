@@ -1,0 +1,25 @@
+{
+  "name": "Forge Kitchen",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:4-24-bookworm",
+  "hostRequirements": { "cpus": 2, "memory": "4gb" },
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "secrets": {
+    "FORGE_EMAIL": {
+      "description": "The email address of your Atlassian account. The Forge CLI reads it instead of forge login.",
+      "documentationUrl": "https://forgecloud.si/#setup"
+    },
+    "FORGE_API_TOKEN": {
+      "description": "An API token from id.atlassian.com. It acts as you: use your own, and revoke it when the course is over.",
+      "documentationUrl": "https://id.atlassian.com/manage-profile/security/api-tokens"
+    }
+  },
+  "customizations": {
+    "codespaces": { "openFiles": ["README.md"] },
+    "vscode": {
+      "extensions": ["redhat.vscode-yaml"],
+      "settings": {
+        "yaml.schemas": { "/home/node/.forge-kitchen/manifest-schema.json": "**/manifest.yml" }
+      }
+    }
+  }
+}

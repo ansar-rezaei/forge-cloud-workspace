@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Saves your Atlassian email and API token for the Forge CLI in this workspace.
+# There is no system keychain here, so forge login cannot store the token; the CLI reads
+# FORGE_EMAIL and FORGE_API_TOKEN instead.
+#   kitchen-login            ask for both and save them
+#   kitchen-login --logout   forget them
+set -euo pipefail
+
+file="$HOME/.forge-login"
+
+if [ "${1:-}" = "--logout" ]; then
+  rm -f "$file"
+  echo "Logged out. Revoke the token at https://id.atlassian.com/manage-profile/security/api-tokens if you no longer need it."
+  exit 0
+fi
+
+echo "Create an API token at https://id.atlassian.com/manage-profile/security/api-tokens"
+read -rp "Atlassian email: " email
+read -rsp "API token (hidden as you type): " token
+echo
+
+if [ -z "$email" ] || [ -z "$token" ]; then
+  echo "Both the email and the token are needed. Nothing was saved." >&2
+  exit 1
+fi
+
+umask 077
+printf 'export FORGE_EMAIL=%q\nexport FORGE_API_TOKEN=%q\n' "$email" "$token" >"$file"
+echo "Saved for every terminal in this workspace. Check it with: forge whoami"
