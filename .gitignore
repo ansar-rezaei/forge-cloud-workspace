@@ -1,3 +1,12 @@
 node_modules/
 .DS_Store
 *.log
+
+# The app you create in the course lives in this folder too. Git ignores everything except
+# the workspace's own files, so the editor shows no changes to commit.
+/*
+!/.devcontainer/
+!/.vscode/
+!/bin/
+!/README.md
+!/.gitignore

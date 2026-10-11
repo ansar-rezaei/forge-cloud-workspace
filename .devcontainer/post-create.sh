@@ -4,7 +4,9 @@ set -euo pipefail
 
 bin="$(cd "$(dirname "${BASH_SOURCE[0]}")/../bin" && pwd)"
 
-npm install -g @forge/cli@latest
+# Only errors are shown: npm's notices and warnings look alarming to someone new and need no action here.
+npm config set update-notifier false
+npm install -g @forge/cli@latest --loglevel=error --no-fund --no-audit
 
 # The Forge manifest schema, so the editor checks manifest.yml as you type.
 mkdir -p "$HOME/.forge-cloud"
@@ -30,3 +32,5 @@ RC
 done
 
 forge --version
+echo
+echo "Setup finished. Open a new terminal (Terminal > New Terminal) and carry on with the course."
