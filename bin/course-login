@@ -2,8 +2,8 @@
 # Saves your Atlassian email and API token for the Forge CLI in this workspace.
 # There is no system keychain here, so forge login cannot store the token; the CLI reads
 # FORGE_EMAIL and FORGE_API_TOKEN instead.
-#   kitchen-login            ask for both and save them
-#   kitchen-login --logout   forget them
+#   course-login            ask for both and save them
+#   course-login --logout   forget them
 set -euo pipefail
 
 file="$HOME/.forge-login"

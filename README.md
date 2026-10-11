@@ -1,8 +1,8 @@
-# Forge Kitchen workspace
+# Forge Cloud workspace
 
-A ready-made place to build while you follow [Forge Kitchen](https://forgecloud.si/), a hands-on course on Atlassian Forge. Node.js 24 and the Forge CLI are already installed, and the editor checks your `manifest.yml` as you type.
+A ready-made place to build while you follow [Forge Cloud](https://forgecloud.si/), a hands-on course on Atlassian Forge. Node.js 24 and the Forge CLI are already installed, and the editor checks your `manifest.yml` as you type.
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/ansar-rezaei/forge-kitchen-workspace?quickstart=1)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/ansar-rezaei/forge-cloud-workspace?quickstart=1)
 
 ## Open it
 
@@ -15,9 +15,9 @@ When you are done, stop or delete the codespace at [github.com/codespaces](https
 
 | Command | What it does |
 | --- | --- |
-| `kitchen-login` | Saves your Atlassian email and [API token](https://id.atlassian.com/manage-profile/security/api-tokens) for the Forge CLI. Use it instead of `forge login`, which cannot store the token here because there is no system keychain. `kitchen-login --logout` forgets them. |
-| `kitchen-check` | Checks the general setup: Node.js, the Forge CLI and your login. |
-| `kitchen-catch-up` | Lists every point in the course you can start from. `kitchen-catch-up level-1/after-04-call-the-supplier` downloads the example app as it is after that lesson. |
+| `course-login` | Saves your Atlassian email and [API token](https://id.atlassian.com/manage-profile/security/api-tokens) for the Forge CLI. Use it instead of `forge login`, which cannot store the token here because there is no system keychain. `course-login --logout` forgets them. |
+| `course-check` | Checks the general setup: Node.js, the Forge CLI and your login. |
+| `course-catch-up` | Lists every point in the course you can start from. `course-catch-up level-1/after-04-look-up-the-vehicle` downloads the example app as it is after that lesson. |
 
 In a codespace with the `FORGE_EMAIL` and `FORGE_API_TOKEN` secrets saved, you are already logged in.
 
