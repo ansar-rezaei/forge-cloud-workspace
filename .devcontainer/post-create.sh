@@ -13,6 +13,9 @@ mkdir -p "$HOME/.forge-cloud"
 schema="$(find "$(npm root -g)/@forge/cli" -path '*@forge/manifest/out/schema/manifest-schema.json' -print -quit 2>/dev/null || true)"
 [ -n "$schema" ] && cp "$schema" "$HOME/.forge-cloud/manifest-schema.json"
 
+# Tab completion for forge commands (type "forge dep" and press Tab), the same script "forge autocomplete install" sets up.
+forge --completion >"$HOME/.forge-cloud/forge-completion.sh"
+
 # Every new terminal loads the login saved by course-login, and course-login updates the current one too.
 for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
   [ -f "$rc" ] || continue
@@ -22,6 +25,7 @@ for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
 # Forge Cloud
 export PATH="\$PATH:$bin"
 [ -f "\$HOME/.forge-login" ] && . "\$HOME/.forge-login"
+[ -f "\$HOME/.forge-cloud/forge-completion.sh" ] && . "\$HOME/.forge-cloud/forge-completion.sh"
 course-login() {
   "$bin/course-login" "\$@" || return
   unset FORGE_EMAIL FORGE_API_TOKEN
