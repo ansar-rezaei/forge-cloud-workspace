@@ -1,6 +1,6 @@
 # Forge Cloud workspace
 
-A ready-made place to build while you follow [Forge Cloud](https://forgecloud.si/), a hands-on course on Atlassian Forge. Node.js 24 and the Forge CLI are already installed, and the editor checks your `manifest.yml` as you type.
+A ready-made place to build while you follow [Forge Cloud](https://forgecloud.si/), a hands-on course on Atlassian Forge. Node.js 24 and the Forge CLI are already installed, the terminal completes `forge` commands when you press Tab (type `forge dep` and press Tab), and the editor checks your `manifest.yml` as you type.
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/ansar-rezaei/forge-cloud-workspace?quickstart=1)
 
