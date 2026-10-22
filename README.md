@@ -17,7 +17,7 @@ When you are done, stop or delete the codespace at [github.com/codespaces](https
 | --- | --- |
 | `course-login` | Saves your Atlassian email and [API token](https://id.atlassian.com/manage-profile/security/api-tokens) for the Forge CLI. Use it instead of `forge login`, which cannot store the token here because there is no system keychain. `course-login --logout` forgets them. |
 | `course-check` | Checks the general setup: Node.js, the Forge CLI and your login. |
-| `course-catch-up` | Lists every point in the course you can start from. `course-catch-up level-1/after-04-look-up-the-vehicle` downloads the example app as it is after that lesson. |
+| `course-catch-up` | Lists every point in the course you can start from. `course-catch-up level-1/after-04-look-up-the-car` downloads the example app as it is after that lesson. |
 
 In a codespace with the `FORGE_EMAIL` and `FORGE_API_TOKEN` secrets saved, you are already logged in.
 
