@@ -2,7 +2,7 @@
 # Gets the course's example app as it should be at a point in the course, so you can
 # start a lesson without having done the ones before it.
 #   course-catch-up                  list every point you can start from
-#   course-catch-up <name>           download one, e.g. course-catch-up level-1/after-04-look-up-the-vehicle
+#   course-catch-up <name>           download one, e.g. course-catch-up level-1/after-04-look-up-the-car
 #                                     (a unique part of the name is enough: course-catch-up 1/after-04)
 set -euo pipefail
 
