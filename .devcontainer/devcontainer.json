@@ -1,8 +1,12 @@
 {
   "name": "Forge Cloud",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:4-24-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "24" }
+  },
   "hostRequirements": { "cpus": 2, "memory": "4gb" },
   "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "remoteEnv": { "PATH": "${containerEnv:PATH}:${containerWorkspaceFolder}/bin" },
   "secrets": {
     "FORGE_EMAIL": {
       "description": "The email address of your Atlassian account. The Forge CLI reads it instead of forge login.",

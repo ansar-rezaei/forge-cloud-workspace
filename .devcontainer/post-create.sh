@@ -4,6 +4,16 @@ set -euo pipefail
 
 bin="$(cd "$(dirname "${BASH_SOURCE[0]}")/../bin" && pwd)"
 
+# The image can ship an older Node.js 24 than the Forge CLI accepts. The node feature in devcontainer.json
+# installs the newest 24; this is a fallback for when it could not, so forge never refuses to start.
+if ! npx --yes semver@7 -r "$(npm view @forge/cli@latest engines.node)" "$(node --version)" >/dev/null 2>&1; then
+  set +u
+  . "${NVM_DIR:-/usr/local/share/nvm}/nvm.sh"
+  nvm install 24 >/dev/null
+  nvm alias default 24 >/dev/null
+  set -u
+fi
+
 # Only errors are shown: npm's notices and warnings look alarming to someone new and need no action here.
 npm config set update-notifier false
 npm install -g @forge/cli@latest --loglevel=error --no-fund --no-audit
@@ -16,18 +26,19 @@ schema="$(find "$(npm root -g)/@forge/cli" -path '*@forge/manifest/out/schema/ma
 # Tab completion for forge commands (type "forge dep" and press Tab), the same script "forge autocomplete install" sets up.
 forge --completion >"$HOME/.forge-cloud/forge-completion.sh"
 
-# Every new terminal loads the login saved by course-login, and course-login updates the current one too.
+# The course-* commands are on PATH through remoteEnv in devcontainer.json, so even the terminal that opens
+# with the workspace has them. Every new terminal loads the login saved by course-login, and course-login
+# updates the current one too.
 for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
   [ -f "$rc" ] || continue
   grep -q '# Forge Cloud' "$rc" && continue
   cat >>"$rc" <<RC
 
 # Forge Cloud
-export PATH="\$PATH:$bin"
 [ -f "\$HOME/.forge-login" ] && . "\$HOME/.forge-login"
 [ -f "\$HOME/.forge-cloud/forge-completion.sh" ] && . "\$HOME/.forge-cloud/forge-completion.sh"
 course-login() {
-  "$bin/course-login" "\$@" || return
+  COURSE_LOGIN_WRAPPED=1 "$bin/course-login" "\$@" || return
   unset FORGE_EMAIL FORGE_API_TOKEN
   [ -f "\$HOME/.forge-login" ] && . "\$HOME/.forge-login"
   return 0
