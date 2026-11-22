@@ -4,6 +4,16 @@ set -euo pipefail
 
 bin="$(cd "$(dirname "${BASH_SOURCE[0]}")/../bin" && pwd)"
 
+# The image can ship an older Node.js 24 than the Forge CLI accepts. The node feature in devcontainer.json
+# installs the newest 24; this is a fallback for when it could not, so forge never refuses to start.
+if ! npx --yes semver@7 -r "$(npm view @forge/cli@latest engines.node)" "$(node --version)" >/dev/null 2>&1; then
+  set +u
+  . "${NVM_DIR:-/usr/local/share/nvm}/nvm.sh"
+  nvm install 24 >/dev/null
+  nvm alias default 24 >/dev/null
+  set -u
+fi
+
 # Only errors are shown: npm's notices and warnings look alarming to someone new and need no action here.
 npm config set update-notifier false
 npm install -g @forge/cli@latest --loglevel=error --no-fund --no-audit
