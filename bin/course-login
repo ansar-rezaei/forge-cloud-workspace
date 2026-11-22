@@ -26,4 +26,11 @@ fi
 
 umask 077
 printf 'export FORGE_EMAIL=%q\nexport FORGE_API_TOKEN=%q\n' "$email" "$token" >"$file"
-echo "Saved for every terminal in this workspace. Check it with: forge whoami"
+if [ -n "${COURSE_LOGIN_WRAPPED:-}" ]; then
+  echo "Saved for every terminal in this workspace. Check it with: forge whoami"
+else
+  # This terminal opened before the workspace finished setting up, so it can't load the login by itself.
+  echo "Saved for every new terminal in this workspace."
+  echo "This terminal opened before the workspace was ready: open a new one with the + at the top right"
+  echo "of the terminal panel, and check the login there with: forge whoami"
+fi

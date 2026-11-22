@@ -6,6 +6,7 @@
   },
   "hostRequirements": { "cpus": 2, "memory": "4gb" },
   "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "remoteEnv": { "PATH": "${containerEnv:PATH}:${containerWorkspaceFolder}/bin" },
   "secrets": {
     "FORGE_EMAIL": {
       "description": "The email address of your Atlassian account. The Forge CLI reads it instead of forge login.",
