@@ -33,22 +33,83 @@ elif [ "$count" -gt 1 ]; then
 fi
 
 name="$matches"
-target="workshop-helper"
-[ -e "$target" ] && target="workshop-helper-$(basename "$name")"
-if [ -e "$target" ]; then
-  echo "$target already exists. Rename or remove it first." >&2
+
+if [ -f manifest.yml ]; then
+  echo "You are inside an app folder. Go to the folder above it first (cd ..), then run course-catch-up again." >&2
   exit 1
 fi
+
+# Your own app is the folder whose manifest.yml has a real app id (the course's example has a
+# placeholder). If there is exactly one, offer to bring it to this point and keep its id.
+own=""
+for dir in */; do
+  dir="${dir%/}"
+  if grep -qE '^[[:space:]]*id:[[:space:]]*ari:cloud:ecosystem::app/[0-9a-f-]+[[:space:]]*$' "$dir/manifest.yml" 2>/dev/null; then
+    [ -n "$own" ] && { own=""; break; }
+    own="$dir"
+  fi
+done
 
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 curl -fsSL "$site/downloads/$name.zip" -o "$tmp/code.zip"
 unzip -q "$tmp/code.zip" -d "$tmp/out"
+rm -f "$tmp/out/workshop-helper/README-FORGE-CLOUD.txt"
+
+if [ -n "$own" ] && [ -t 0 ]; then
+  echo "Your own app is in $own/."
+  echo "course-catch-up can bring it to $name: its code is replaced with the course's,"
+  echo "and its app id stays, so it is still the same app on your site."
+  read -rp "Update $own/ now? A copy of your current files is kept. (y/N) " answer
+  if [[ "$answer" =~ ^[Yy] ]]; then
+    backup="$own-before-$(basename "$name")"
+    if [ -e "$backup" ]; then
+      echo "$backup already exists. Rename or remove it first." >&2
+      exit 1
+    fi
+    id_line="$(grep -E '^[[:space:]]*id:[[:space:]]*ari:cloud:ecosystem::app/' "$own/manifest.yml" | head -1)"
+    mv "$own" "$backup"
+    mv "$tmp/out/workshop-helper" "$own"
+    # Put your app id back in place of the course's placeholder.
+    ID_LINE="$id_line" awk '/^[[:space:]]*id:[[:space:]]*ari:cloud:ecosystem::app\// && !done { print ENVIRON["ID_LINE"]; done=1; next } { print }' \
+      "$own/manifest.yml" >"$tmp/manifest.yml" && cp "$tmp/manifest.yml" "$own/manifest.yml"
+    echo
+    echo "Done. $own/ now has the code as it is at $name, with your own app id."
+    echo "Your earlier files are in $backup/. Delete that folder when you no longer need it."
+    echo
+    echo "Next, in the terminal:"
+    echo "  cd $own"
+    echo "  npm install"
+    if [ -f "$own/package.json" ] && grep -q '"build:ui"' "$own/package.json"; then
+      echo "  npm run build:ui"
+    fi
+    echo "  forge deploy"
+    echo "If forge deploy stops and asks you to approve new permissions, do as the lesson says:"
+    echo "forge deploy --approve MAJOR_VERSION_RULE, then forge install --upgrade."
+    exit 0
+  fi
+  echo
+fi
+
+# A separate folder, so it is never mistaken for your own Workshop-helper.
+target="example-$(basename "$name")"
+if [ -e "$target" ]; then
+  echo "$target already exists. Rename or remove it first." >&2
+  exit 1
+fi
 mv "$tmp/out/workshop-helper" "$target"
 
 echo "Downloaded $name into $target/"
 echo
-if [ -f "$target/README-FORGE-CLOUD.txt" ]; then
-  sed -n '/^Starting from this folder/,/^$/p' "$target/README-FORGE-CLOUD.txt"
+if [ -n "$own" ]; then
+  echo "To look at it next to your own app, open it in the Explorer on the left."
+  echo "Copy files you need from it into $own/, but keep your own manifest.yml's id: line:"
+  echo "that line is what links the code to your app."
+else
+  echo "To build from this folder as your own app:"
+  echo "  cd $target"
+  echo "  npm install"
+  echo "  forge register        (once: makes it your own app)"
+  echo "  forge variables set --encrypt API_NINJAS_KEY    (the CLI asks for the key)"
+  echo "  forge deploy, then forge install"
 fi
-echo "Start with: cd $target"
